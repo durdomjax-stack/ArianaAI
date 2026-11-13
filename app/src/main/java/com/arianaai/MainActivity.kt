@@ -44,7 +44,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     override fun onInit(status: Int) {
-        if (status == TextToSpeech.SUCCESS) tts?.language = Locale("ru", "RU")
+        if (status == TextToSpeech.SUCCESS) tts?.language = Locale("uk", "UA")
     }
 
     inner class Bridge {
@@ -73,8 +73,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private fun startVoiceRecognition() {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ru-RU")
-            putExtra(RecognizerIntent.EXTRA_PROMPT, "Скажи что-нибудь Аріане")
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "uk-UA")
+            putExtra(RecognizerIntent.EXTRA_PROMPT, "Скажи щось Аріані")
         }
         try {
             startActivityForResult(intent, voiceRequest)
