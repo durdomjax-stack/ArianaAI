@@ -64,16 +64,23 @@ if (host) {
     scene.add(model);
     model.updateMatrixWorld(true);
     const fittedBox=new THREE.Box3().setFromObject(model);
-    const sphere=fittedBox.getBoundingSphere(new THREE.Sphere());
+    const fittedSize=fittedBox.getSize(new THREE.Vector3());
+    const target=fittedBox.getCenter(new THREE.Vector3());
     const verticalFov=THREE.MathUtils.degToRad(camera.fov);
     const horizontalFov=2*Math.atan(Math.tan(verticalFov/2)*Math.max(camera.aspect,0.25));
-    const limitingFov=Math.min(verticalFov,horizontalFov);
-    const distance=(sphere.radius/Math.sin(limitingFov/2))*2.65;
-    camera.position.set(0,0,Math.max(distance,8.5));
-    camera.near=Math.max(0.01,distance-sphere.radius*3.5);
-    camera.far=distance+sphere.radius*5;
+    // Fit the actual full-body bounds to both viewport dimensions and aim
+    // at the bounds center, not the model origin (which may be at the feet).
+    const distance=Math.max(
+      (fittedSize.y*0.5)/Math.tan(verticalFov/2),
+      (fittedSize.x*0.5)/Math.tan(horizontalFov/2),
+      fittedSize.z*0.5
+    )*1.45;
+    const safeDistance=Math.max(distance,4.5);
+    camera.position.set(target.x,target.y,target.z+safeDistance);
+    camera.near=Math.max(0.01,safeDistance-fittedSize.length()*2);
+    camera.far=safeDistance+fittedSize.length()*4;
     camera.updateProjectionMatrix();
-    camera.lookAt(0,0,0);
+    camera.lookAt(target);
     mixer=new THREE.AnimationMixer(model);
     clips=gltf.animations||[];
     if(clips.length)playForMode('idle');
