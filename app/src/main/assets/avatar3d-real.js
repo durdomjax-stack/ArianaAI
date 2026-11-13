@@ -29,8 +29,9 @@ if (host) {
     const target=bounds.getCenter(new THREE.Vector3());
     const vfov=THREE.MathUtils.degToRad(camera.fov);
     const hfov=2*Math.atan(Math.tan(vfov/2)*Math.max(camera.aspect,0.2));
-    const distance=Math.max((size.y*.5)/Math.tan(vfov/2),(size.x*.5)/Math.tan(hfov/2),size.z*.5)*1.18;
-    const d=Math.max(distance,3.8);
+    const distance=Math.max((size.y*.5)/Math.tan(vfov/2),(size.x*.5)/Math.tan(hfov/2),size.z*.5)*1.8;
+    // Keep generous vertical margin: the previous 3.8 minimum cropped the 3.25-unit model on phone screens.
+    const d=Math.max(distance,4.8);
     camera.position.set(target.x,target.y,target.z+d);
     camera.near=Math.max(.01,d-size.length()*2);
     camera.far=d+size.length()*4;
