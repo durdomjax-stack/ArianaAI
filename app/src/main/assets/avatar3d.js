@@ -6,7 +6,7 @@
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#342338');
   const camera = new THREE.PerspectiveCamera(32, 1, .1, 100);
-  camera.position.set(0, 1.25, 7.8);
+  camera.position.set(0, 1.05, 9.0);
   const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
@@ -23,6 +23,8 @@
   function ball(parent,name,pos,scale,material){const m=new THREE.Mesh(new THREE.SphereGeometry(1,32,24),material);m.name=name;m.position.set(...pos);m.scale.set(...scale);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
   // Body silhouette: adult, curvy proportions, dressed in a fitted elegant outfit.
   const torso=ball(group,'torso',[0,1.42,0],[.72,.92,.42],mat('#7b294e'));
+  ball(group,'bustL',[-.34,1.72,.29],[.39,.39,.30],mat('#7b294e'));
+  ball(group,'bustR',[.34,1.72,.29],[.39,.39,.30],mat('#7b294e'));
   const waist=ball(group,'waist',[0,.92,.02],[.53,.48,.37],mat('#7b294e'));
   const hips=ball(group,'hips',[0,.48,0],[.92,.62,.48],mat('#7b294e'));
   ball(group,'neck',[0,2.25,0],[.19,.32,.19],skin);
@@ -31,6 +33,10 @@
   ball(group,'haircap',[0,3.13,-.055],[.52,.48,.48],hair);
   for(let i=0;i<11;i++){const a=(i/10)*Math.PI;ball(group,'curlL'+i,[-.46-Math.sin(a)*.06,2.78+Math.cos(a)*.33,-.03],[.13,.19,.14],hair);ball(group,'curlR'+i,[.46+Math.sin(a)*.06,2.78+Math.cos(a)*.33,-.03],[.13,.19,.14],hair);}
   const band=ball(group,'headband',[0,3.16,.02],[.51,.075,.46],darkHair);
+  ball(group,'browL',[-.18,3.055,.416],[.105,.025,.025],darkHair);
+  ball(group,'browR',[.18,3.055,.416],[.105,.025,.025],darkHair);
+  ball(group,'cheekL',[-.29,2.72,.34],[.12,.075,.045],mat('#e99a9e'));
+  ball(group,'cheekR',[.29,2.72,.34],[.12,.075,.045],mat('#e99a9e'));
   // Face features
   ball(group,'eyeL',[-.18,2.92,.405],[.075,.09,.035],white);ball(group,'eyeR',[.18,2.92,.405],[.075,.09,.035],white);
   ball(group,'irisL',[-.18,2.91,.438],[.038,.05,.018],eyes);ball(group,'irisR',[.18,2.91,.438],[.038,.05,.018],eyes);
@@ -47,9 +53,13 @@
   const resize=()=>{const w=host.clientWidth,h=host.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();};new ResizeObserver(resize).observe(host);resize();
   let mode='idle',start=performance.now();
   window.ariana3DAction=(next)=>{mode=next||'idle';start=performance.now();};
-  window.ariana3DOutfit=(color)=>{const c=new THREE.Color(color||'#7b294e');group.traverse(o=>{if(o.isMesh && ['torso','waist','hips'].includes(o.name))o.material.color.copy(c);});};
+  window.ariana3DOutfit=(color)=>{const c=new THREE.Color(color||'#7b294e');group.traverse(o=>{if(o.isMesh && ['torso','waist','hips','bustL','bustR'].includes(o.name))o.material.color.copy(c);});};
+  window.arianaSpeaking=false;
   let drag=false,lastX=0;renderer.domElement.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;});window.addEventListener('pointerup',()=>drag=false);window.addEventListener('pointermove',e=>{if(drag){group.rotation.y+=(e.clientX-lastX)*.009;lastX=e.clientX;}});
   function tick(now){requestAnimationFrame(tick);const t=(now-start)/1000;group.position.y=Math.sin(now*.0014)*.025;head.rotation.y=Math.sin(now*.0007)*.08;head.rotation.z=Math.sin(now*.0011)*.025;
+    const phase=now%4300;const blink=phase>4080?Math.max(.12,1-(phase-4080)/65):1;
+    ['eyeL','eyeR'].forEach(n=>{const o=group.getObjectByName(n);if(o)o.scale.y=.09*blink;});
+    const mouth=group.getObjectByName('mouth');if(mouth)mouth.scale.y=window.arianaSpeaking?.035+Math.abs(Math.sin(now*.025))*.10:.035;
     if(mode==='dance'){group.rotation.y=Math.sin(t*3)*.25;group.rotation.z=Math.sin(t*6)*.035;arms.forEach(a=>a.pivot.rotation.z=a.side*(.75+Math.sin(t*5)*.25));}
     else {group.rotation.z=Math.sin(now*.0008)*.012;arms.forEach(a=>a.pivot.rotation.z=a.side*(.06+Math.sin(now*.001)*.025));}
     if(mode==='dance'&&t>7){mode='idle';group.rotation.set(0,0,0);}
