@@ -55,11 +55,6 @@ if (host) {
   loader.load('models/Ariana.glb',gltf=>{
     model=gltf.scene;
     model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;if(o.material){o.material.side=THREE.DoubleSide;}}});
-    // This Ariana GLB is Z-up. Convert it to Three.js Y-up before
-    // measuring bounds; otherwise the app treats body depth as body height
-    // and zooms into the legs.
-    model.rotation.x = -Math.PI / 2;
-    model.updateMatrixWorld(true);
     const box=new THREE.Box3().setFromObject(model);
     const size=box.getSize(new THREE.Vector3());
     const center=box.getCenter(new THREE.Vector3());
@@ -73,8 +68,8 @@ if (host) {
     const verticalFov=THREE.MathUtils.degToRad(camera.fov);
     const horizontalFov=2*Math.atan(Math.tan(verticalFov/2)*Math.max(camera.aspect,0.25));
     const limitingFov=Math.min(verticalFov,horizontalFov);
-    const distance=(sphere.radius/Math.sin(limitingFov/2))*1.35;
-    camera.position.set(0,0,Math.max(distance,4.5));
+    const distance=(sphere.radius/Math.sin(limitingFov/2))*2.65;
+    camera.position.set(0,0,Math.max(distance,8.5));
     camera.near=Math.max(0.01,distance-sphere.radius*3.5);
     camera.far=distance+sphere.radius*5;
     camera.updateProjectionMatrix();
