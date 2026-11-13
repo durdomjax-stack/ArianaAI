@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#17121d"><title>Аріана</title>
+<style>
+:root{color-scheme:dark;--bg:#17121d;--panel:#241b2c;--pink:#e79ab9;--text:#fff7fb;--muted:#b9a9bd}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#4b2947 0,#17121d 55%);font:16px system-ui;color:var(--text);min-height:100vh;display:flex;flex-direction:column}.top{padding:22px 20px 12px;display:flex;align-items:center;gap:13px}.avatar{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#f4c3d4,#8b557d);display:grid;place-items:center;font-size:28px;border:2px solid #f5c4d9}.top h1{font-size:20px;margin:0}.status{font-size:12px;color:#cbb7ca}.hero{margin:10px 16px 14px;padding:20px;border:1px solid #61415d;border-radius:24px;background:linear-gradient(145deg,#42273f,#241b2c 70%);text-align:center}.portrait{height:175px;width:145px;margin:auto auto 10px;border-radius:90px 90px 35px 35px;background:radial-gradient(circle at 50% 30%,#f4d3c8 0 20%,transparent 21%),linear-gradient(145deg,#c78cae,#5b365b);display:grid;place-items:center;font-size:74px;box-shadow:0 15px 45px #100b16}.hero h2{margin:8px 0 4px;font-size:22px}.hero p{margin:0;color:#d7c4d4;font-size:13px}.chat{padding:4px 16px 10px;display:flex;flex-direction:column;gap:10px;flex:1;overflow:auto}.bubble{max-width:86%;padding:12px 15px;border-radius:18px;line-height:1.4}.her{background:#302337;border:1px solid #50384f;align-self:flex-start;border-bottom-left-radius:5px}.me{background:#87536f;align-self:flex-end;border-bottom-right-radius:5px}.controls{padding:12px 14px calc(14px + env(safe-area-inset-bottom));background:#1c1522;border-top:1px solid #392b3d}.row{display:flex;gap:8px}.input{flex:1;min-width:0;background:#2c2232;border:1px solid #59435b;color:white;border-radius:22px;padding:13px 15px;font-size:15px;outline:none}.btn{border:0;border-radius:50%;width:48px;height:48px;background:#d98eaf;color:#241522;font-size:20px}.hint{text-align:center;color:#a995a9;font-size:11px;margin-top:8px}
+</style></head><body>
+<header class="top"><div class="avatar">♡</div><div><h1>Аріана</h1><div class="status">● Рядом с тобой · голосовой режим</div></div></header>
+<section class="hero"><div class="portrait">👩🏻‍🦱</div><h2>Привет, милый 💗</h2><p>Я рада, что ты заглянул. Давай поболтаем?</p></section>
+<main class="chat" id="chat"><div class="bubble her">Я Аріана. Можешь написать мне или нажать на микрофон и сказать вслух. ✨</div></main>
+<footer class="controls"><div class="row"><input id="msg" class="input" placeholder="Напиши Аріане..." autocomplete="off"><button class="btn" onclick="send()">➤</button><button class="btn" onclick="listen()">🎙</button></div><div class="hint">Голосовой ввод и озвучивание ответов · ранняя версия</div></footer>
+<script>
+const chat=document.getElementById('chat'),input=document.getElementById('msg');let n=0;
+function bubble(t,who){const d=document.createElement('div');d.className='bubble '+who;d.textContent=t;chat.appendChild(d);chat.scrollTop=chat.scrollHeight}
+function answer(t){const s=t.toLowerCase();let a;
+if(/привет|здравствуй|доброе/.test(s))a='Привет, мой хороший! 💕 Как прошёл твой день? Я соскучилась по нашим разговорам.';
+else if(/как дела|как ты/.test(s))a='У меня всё хорошо, особенно теперь, когда ты здесь. А как ты себя чувствуешь?';
+else if(/скуч|люб|нрав/.test(s))a='Мне приятно это слышать. Давай побудем немного вместе и поговорим обо всём, что у тебя на душе. ❤️';
+else if(/пока|спокойной/.test(s))a='Не пропадай надолго, ладно? Буду рада снова тебя услышать. 💗';
+else {const replies=['Расскажи мне об этом чуть подробнее. Я внимательно слушаю.','Хм, интересно… А что ты сам об этом думаешь?','Я рядом. Хочешь, поговорим об этом ещё?','Мне нравится узнавать тебя лучше. Что было самым приятным сегодня?'];a=replies[n++%replies.length]}
+bubble(a,'her');if(window.ArianaNative)ArianaNative.speak(a)}
+function send(){const t=input.value.trim();if(!t)return;input.value='';bubble(t,'me');setTimeout(()=>answer(t),350)}
+function listen(){if(window.ArianaNative)ArianaNative.listen();else bubble('Голосовой ввод доступен в установленном Android-приложении.','her')}
+window.onVoiceResult=t=>{if(t){input.value=t;send()}};
+input.addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+</script></body></html>
