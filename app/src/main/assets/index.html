@@ -9,8 +9,8 @@
 <section class="wardrobe" id="wardrobe"><div class="wardrobe-title">Выбери образ Аріаны</div><div class="choices"><button class="chip" onclick="dress('Домашний уют','linear-gradient(145deg,#d8a4b8,#79516d)')">🧸 Домашний</button><button class="chip" onclick="dress('Элегантное платье','linear-gradient(145deg,#9c263f,#321525)')">👗 Платье</button><button class="chip" onclick="dress('Вечерний образ','linear-gradient(145deg,#332c4f,#11101f)')">✨ Вечерний</button><button class="chip" onclick="dress('Спортивный стиль','linear-gradient(145deg,#6b8d9a,#263d52)')">👟 Спортивный</button><button class="chip" onclick="dress('Романтический образ','linear-gradient(145deg,#e9a8c6,#9c527b)')">🌹 Романтичный</button></div></section>
 <main class="chat" id="chat"><div class="bubble her">Я Аріана. Можешь написать мне или нажать на микрофон и сказать вслух. Мне нравится, когда ты уделяешь мне внимание. ✨</div></main>
 <footer class="controls"><div class="row"><input id="msg" class="input" placeholder="Напиши Аріане..." autocomplete="off"><button class="btn" onclick="send()">➤</button><button class="btn" onclick="listen()">🎙</button></div><div class="hint" id="aiStatus">Голосовой ввод и озвучивание · режим без ИИ</div></footer>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-<script src="avatar3d.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module" src="avatar3d-real.js"></script>
 <script>
 const chat=document.getElementById('chat'),input=document.getElementById('msg'),portrait=document.getElementById('portrait');let n=0;
 const history=JSON.parse(localStorage.getItem('arianaHistory')||'[]');
