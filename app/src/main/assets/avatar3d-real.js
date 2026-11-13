@@ -70,10 +70,11 @@ if (host) {
     const verticalFov=THREE.MathUtils.degToRad(camera.fov);
     const horizontalFov=2*Math.atan(Math.tan(verticalFov/2)*Math.max(camera.aspect,0.25));
     const limitingFov=Math.min(verticalFov,horizontalFov);
-    const distance=(sphere.radius/Math.sin(limitingFov/2))*1.22;
-    camera.position.set(0,0,Math.max(distance,4.2));
-    camera.near=Math.max(0.01,distance-sphere.radius*2.5);
-    camera.far=distance+sphere.radius*4;
+    const distance=(sphere.radius/Math.sin(limitingFov/2))*2.65;
+    // Leave generous headroom for the full-height rig and animation pose.
+    camera.position.set(0,0,Math.max(distance,8.5));
+    camera.near=Math.max(0.01,distance-sphere.radius*3.5);
+    camera.far=distance+sphere.radius*5;
     camera.updateProjectionMatrix();
     camera.lookAt(0,0,0);
     mixer=new THREE.AnimationMixer(model);
