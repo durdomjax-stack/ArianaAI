@@ -11,8 +11,6 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import java.util.Locale
 
 class MainActivity : Activity(), TextToSpeech.OnInitListener {
@@ -38,12 +36,21 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     inner class Bridge {
-        @JavascriptInterface fun speak(text: String) { runOnUiThread { tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "ariana") } }
-        @JavascriptInterface fun stopSpeaking() { runOnUiThread { tts?.stop() } }
-        @JavascriptInterface fun listen() {
+        @JavascriptInterface
+        fun speak(text: String) {
+            runOnUiThread { tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "ariana") }
+        }
+
+        @JavascriptInterface
+        fun stopSpeaking() {
+            runOnUiThread { tts?.stop() }
+        }
+
+        @JavascriptInterface
+        fun listen() {
             runOnUiThread {
-                if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.RECORD_AUDIO), voiceRequest)
+                if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), voiceRequest)
                     return@runOnUiThread
                 }
                 startVoiceRecognition()
@@ -57,13 +64,18 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ru-RU")
             putExtra(RecognizerIntent.EXTRA_PROMPT, "Скажи что-нибудь Аріане")
         }
-        try { startActivityForResult(intent, voiceRequest) }
-        catch (_: Exception) { sendVoiceResult("Голосовой ввод недоступен на этом устройстве") }
+        try {
+            startActivityForResult(intent, voiceRequest)
+        } catch (_: Exception) {
+            sendVoiceResult("Голосовой ввод недоступен на этом устройстве")
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == voiceRequest && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) startVoiceRecognition()
+        if (requestCode == voiceRequest && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
+            startVoiceRecognition()
+        }
     }
 
     @Deprecated("Deprecated in Android API")
@@ -81,7 +93,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     override fun onDestroy() {
-        tts?.stop(); tts?.shutdown()
+        tts?.stop()
+        tts?.shutdown()
         web.destroy()
         super.onDestroy()
     }
