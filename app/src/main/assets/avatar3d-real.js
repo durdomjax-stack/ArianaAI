@@ -58,11 +58,23 @@ if (host) {
     const box=new THREE.Box3().setFromObject(model);
     const size=box.getSize(new THREE.Vector3());
     const center=box.getCenter(new THREE.Vector3());
-    const scale=3.35/Math.max(size.y,0.001);
+    // Normalize the model height, then fit the entire bounding sphere to the
+    // actual portrait viewport. This prevents feet-only / head-only framing
+    // when the exported GLB has different proportions or a different origin.
+    const scale=3.25/Math.max(size.y,0.001);
     model.scale.setScalar(scale);
-    // Center the complete character in the camera instead of anchoring the feet below the frame.
     model.position.set(-center.x*scale,-center.y*scale,-center.z*scale);
     scene.add(model);
+    const fittedBox=new THREE.Box3().setFromObject(model);
+    const sphere=fittedBox.getBoundingSphere(new THREE.Sphere());
+    const verticalFov=THREE.MathUtils.degToRad(camera.fov);
+    const horizontalFov=2*Math.atan(Math.tan(verticalFov/2)*Math.max(camera.aspect,0.25));
+    const limitingFov=Math.min(verticalFov,horizontalFov);
+    const distance=(sphere.radius/Math.sin(limitingFov/2))*1.22;
+    camera.position.set(0,0,Math.max(distance,4.2));
+    camera.near=Math.max(0.01,distance-sphere.radius*2.5);
+    camera.far=distance+sphere.radius*4;
+    camera.updateProjectionMatrix();
     camera.lookAt(0,0,0);
     mixer=new THREE.AnimationMixer(model);
     clips=gltf.animations||[];
