@@ -1,16 +1,16 @@
 # ArianaAI backend
 
-Small Node.js backend for the Android companion app. The OpenAI key stays on this server and is never included in the APK or Git repository.
+Backend для Android-приложения. Ключ OpenAI хранится только в секретных переменных хостинга.
 
-## Run locally
-- Install Node.js 20+
-- Set `OPENAI_API_KEY` as an environment variable
-- Optional: set `OPENAI_MODEL` (default: `gpt-5-mini`)
-- Run `npm start`
-- Health check: `GET /health`; chat: `POST /chat`
+## Развернуть на Render
+1. Откройте https://render.com/deploy?repo=https://github.com/durdomjax-stack/ArianaAI
+2. Войдите в Render и создайте Blueprint из репозитория.
+3. Задайте два секрета:
+   - `OPENAI_API_KEY` — ключ из OpenAI Platform.
+   - `ARIANA_APP_TOKEN` — длинный случайный пароль не короче 32 символов.
+4. Дождитесь статуса Live и скопируйте HTTPS-адрес сервиса.
 
-Deploy this folder to a Node hosting provider that supports environment variables and HTTPS. Add `OPENAI_API_KEY` in that provider's secret/environment settings. Then in the Android app tap **⚙ Подключить ИИ** and enter the server's HTTPS URL.
+## Подключить приложение
+В ArianaAI нажмите **⚙ Подключить ИИ**, вставьте HTTPS-адрес, затем тот же `ARIANA_APP_TOKEN`.
 
-Do not paste the API key into the app, chat, source code, or GitHub repository. For production, set `ALLOWED_ORIGIN` appropriately and add per-user authentication and rate limiting before sharing the endpoint publicly.
-
-The app retains its local fallback replies when no backend URL is configured or the backend is unreachable.
+Не вставляйте секреты в GitHub, исходники, APK или чат. Токен сохраняется локально на телефоне. Сервер ограничивает запросы по IP (20 в минуту). Бесплатный хостинг может засыпать при простое; OpenAI API оплачивается отдельно.
