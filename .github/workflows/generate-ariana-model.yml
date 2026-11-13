@@ -18,23 +18,19 @@ jobs:
         with:
           repository: olatunde85/3d-gen
           path: ara
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: Install generator
         working-directory: ara
-        run: pnpm install --frozen-lockfile
+        run: npm ci
       - name: Download CC0 character assets
         working-directory: ara
-        run: pnpm run setup-assets
+        run: npm run setup-assets
       - name: Generate high-detail rigged GLB
         working-directory: ara
-        run: pnpm run export -- --params ../character/ariana.params.json --formats glb --detail high --out ../app/src/main/assets/models
+        run: npm run export -- --params ../character/ariana.params.json --formats glb --detail high --out ../app/src/main/assets/models
       - name: Commit generated model
         run: |
           git config user.name "github-actions[bot]"
