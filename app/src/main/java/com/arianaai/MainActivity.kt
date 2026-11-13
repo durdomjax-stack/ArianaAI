@@ -11,12 +11,16 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
+import androidx.webkit.WebViewAssetLoader
 import java.util.Locale
 
 class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private lateinit var web: WebView
     private var tts: TextToSpeech? = null
     private val voiceRequest = 42
+    private lateinit var assetLoader: WebViewAssetLoader
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,10 +29,18 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         web.settings.javaScriptEnabled = true
         web.settings.domStorageEnabled = true
         web.webChromeClient = WebChromeClient()
-        web.webViewClient = WebViewClient()
+        assetLoader = WebViewAssetLoader.Builder()
+            .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(this))
+            .build()
+        web.webViewClient = object : WebViewClient() {
+            override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
+                val url = request?.url ?: return null
+                return assetLoader.shouldInterceptRequest(url)
+            }
+        }
         web.addJavascriptInterface(Bridge(), "ArianaNative")
         setContentView(web)
-        web.loadUrl("file:///android_asset/index.html")
+        web.loadUrl("https://appassets.androidplatform.net/assets/index.html")
     }
 
     override fun onInit(status: Int) {
