@@ -7,8 +7,8 @@ if (host) {
   host.style.cssText = 'height:340px;width:100%;max-width:340px;margin:0 auto 10px;background:radial-gradient(ellipse at 50% 35%,#69425f,#211725 72%);border-radius:22px;overflow:hidden;position:relative;box-shadow:0 15px 45px #100b16;touch-action:pan-y';
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#342338');
-  const camera = new THREE.PerspectiveCamera(32, 1, .1, 100);
-  camera.position.set(0, 1.25, 6.5);
+  const camera = new THREE.PerspectiveCamera(42, 1, .1, 100);
+  camera.position.set(0, 0.15, 8.5);
   const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -58,11 +58,12 @@ if (host) {
     const box=new THREE.Box3().setFromObject(model);
     const size=box.getSize(new THREE.Vector3());
     const center=box.getCenter(new THREE.Vector3());
-    const scale=3.8/Math.max(size.y,0.001);
+    const scale=3.35/Math.max(size.y,0.001);
     model.scale.setScalar(scale);
-    model.position.set(-center.x*scale,-box.min.y*scale-1.78,-center.z*scale);
+    // Center the complete character in the camera instead of anchoring the feet below the frame.
+    model.position.set(-center.x*scale,-center.y*scale,-center.z*scale);
     scene.add(model);
-    camera.lookAt(0,.05,0);
+    camera.lookAt(0,0,0);
     mixer=new THREE.AnimationMixer(model);
     clips=gltf.animations||[];
     if(clips.length)playForMode('idle');
