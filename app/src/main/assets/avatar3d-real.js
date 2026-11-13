@@ -21,7 +21,23 @@ if (host) {
   const floor = new THREE.Mesh(new THREE.CircleGeometry(3,48),new THREE.MeshStandardMaterial({color:'#4b3048',roughness:.9}));
   floor.rotation.x=-Math.PI/2; floor.position.y=-1.85; scene.add(floor);
   let model=null, mixer=null, clips=[], currentAction=null, mode='idle', started=performance.now();
-  const resize=()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();};
+  function fitCamera(){
+    if(!model)return;
+    model.updateMatrixWorld(true);
+    const bounds=new THREE.Box3().setFromObject(model);
+    const size=bounds.getSize(new THREE.Vector3());
+    const target=bounds.getCenter(new THREE.Vector3());
+    const vfov=THREE.MathUtils.degToRad(camera.fov);
+    const hfov=2*Math.atan(Math.tan(vfov/2)*Math.max(camera.aspect,0.2));
+    const distance=Math.max((size.y*.5)/Math.tan(vfov/2),(size.x*.5)/Math.tan(hfov/2),size.z*.5)*1.18;
+    const d=Math.max(distance,3.8);
+    camera.position.set(target.x,target.y,target.z+d);
+    camera.near=Math.max(.01,d-size.length()*2);
+    camera.far=d+size.length()*4;
+    camera.updateProjectionMatrix();
+    camera.lookAt(target);
+  }
+  const resize=()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();fitCamera();};
   new ResizeObserver(resize).observe(host); resize();
   function playForMode(next){
     mode=next; started=performance.now();
@@ -62,25 +78,7 @@ if (host) {
     model.scale.setScalar(scale);
     model.position.set(-center.x*scale,-center.y*scale,-center.z*scale);
     scene.add(model);
-    model.updateMatrixWorld(true);
-    const fittedBox=new THREE.Box3().setFromObject(model);
-    const fittedSize=fittedBox.getSize(new THREE.Vector3());
-    const target=fittedBox.getCenter(new THREE.Vector3());
-    const verticalFov=THREE.MathUtils.degToRad(camera.fov);
-    const horizontalFov=2*Math.atan(Math.tan(verticalFov/2)*Math.max(camera.aspect,0.25));
-    // Fit the actual full-body bounds to both viewport dimensions and aim
-    // at the bounds center, not the model origin (which may be at the feet).
-    const distance=Math.max(
-      (fittedSize.y*0.5)/Math.tan(verticalFov/2),
-      (fittedSize.x*0.5)/Math.tan(horizontalFov/2),
-      fittedSize.z*0.5
-    )*1.45;
-    const safeDistance=Math.max(distance,4.5);
-    camera.position.set(target.x,target.y,target.z+safeDistance);
-    camera.near=Math.max(0.01,safeDistance-fittedSize.length()*2);
-    camera.far=safeDistance+fittedSize.length()*4;
-    camera.updateProjectionMatrix();
-    camera.lookAt(target);
+    fitCamera();
     mixer=new THREE.AnimationMixer(model);
     clips=gltf.animations||[];
     if(clips.length)playForMode('idle');
