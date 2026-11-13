@@ -6,7 +6,8 @@
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#342338');
   const camera = new THREE.PerspectiveCamera(32, 1, .1, 100);
-  camera.position.set(0, 1.05, 9.0);
+  camera.position.set(0, 1.0, 9.0);
+  camera.lookAt(0, .9, 0);
   const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
@@ -59,10 +60,14 @@
   function tick(now){requestAnimationFrame(tick);const t=(now-start)/1000;group.position.y=Math.sin(now*.0014)*.025;head.rotation.y=Math.sin(now*.0007)*.08;head.rotation.z=Math.sin(now*.0011)*.025;
     const phase=now%4300;const blink=phase>4080?Math.max(.12,1-(phase-4080)/65):1;
     ['eyeL','eyeR'].forEach(n=>{const o=group.getObjectByName(n);if(o)o.scale.y=.09*blink;});
+    ['irisL','irisR'].forEach(n=>{const o=group.getObjectByName(n);if(o)o.scale.y=.05*blink;});
+    ['pupilL','pupilR'].forEach(n=>{const o=group.getObjectByName(n);if(o)o.scale.y=.028*blink;});
     const mouth=group.getObjectByName('mouth');if(mouth)mouth.scale.y=window.arianaSpeaking?.035+Math.abs(Math.sin(now*.025))*.10:.035;
     if(mode==='dance'){group.rotation.y=Math.sin(t*3)*.25;group.rotation.z=Math.sin(t*6)*.035;arms.forEach(a=>a.pivot.rotation.z=a.side*(.75+Math.sin(t*5)*.25));}
+    else if(mode==='wave'){group.rotation.y=Math.sin(t*1.7)*.12;arms.forEach(a=>a.pivot.rotation.z=a.side===1?-.92+Math.sin(t*9)*.24:.06);if(t>4)mode='idle';}
     else {group.rotation.z=Math.sin(now*.0008)*.012;arms.forEach(a=>a.pivot.rotation.z=a.side*(.06+Math.sin(now*.001)*.025));}
     if(mode==='dance'&&t>7){mode='idle';group.rotation.set(0,0,0);}
+    if(mode==='wave'&&t>4){group.rotation.set(0,0,0);}
     renderer.render(scene,camera);
   }requestAnimationFrame(tick);
   window.ariana3DReady=true;
