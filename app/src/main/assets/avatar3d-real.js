@@ -4,7 +4,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const host = document.getElementById('portrait');
 if (host) {
   host.innerHTML = '';
-  host.style.cssText = 'height:340px;width:100%;max-width:340px;margin:0 auto 10px;background:radial-gradient(ellipse at 50% 35%,#69425f,#211725 72%);border-radius:22px;overflow:hidden;position:relative;box-shadow:0 15px 45px #100b16;touch-action:pan-y';
+  host.style.background='radial-gradient(ellipse at 50% 35%,#69425f,#211725 72%)';host.style.position='relative';host.style.overflow='hidden';host.style.boxShadow='0 15px 45px #100b16';host.style.touchAction='pan-y';
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#342338');
   const camera = new THREE.PerspectiveCamera(42, 1, .1, 100);
